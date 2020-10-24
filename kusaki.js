@@ -166,7 +166,7 @@ function cls() {
 function searchArchive(string) {
     cls();
     console.log(chalk.greenBright("✓") + chalk.blueBright(" [formatted string]"));
-    console.log(chalk.yellowBright("- searching archive.org..."));
+    console.log(chalk.yellowBright("- searching archive.org (1/2)..."));
     if (!string.title) {
         got('https://archive.org/search.php?query="' + string.id + '"&and[]=mediatype%3A"movies"').then(function(response) {
             var $ = cheerio.load(response.body);
@@ -178,7 +178,7 @@ function searchArchive(string) {
                     }
                 }
             }
-            searchPetey(string, one);
+            checkWebArchives(string, one);
         })
     } else {
         got('https://archive.org/search.php?query=' + string.id + ' ' + string.title + '&and[]=mediatype%3A"movies"').then(function(response) {
@@ -195,18 +195,36 @@ function searchArchive(string) {
                     }
                 }
             }
-            searchPetey(string, one);
+            checkWebArchives(string, one);
         })
     }
 }
 
+function checkWebArchives(string, old) {
+    console.log(chalk.yellow("- searching archive.org (2/2)..."));
+    got("https://web.archive.org/web/2oe_/http://wayback-fakeurl.archive.org/yt/" + string.id,
+    {
+       followRedirect: false
+    }).then(function(response) {
+        if (response.headers.location) {
+            var d = {
+                "link": response.headers.location,
+                "source": "archive.org"
+            }
+            old.push(d);
+            searchPetey(string, old);
+        } else {
+            searchPetey(string, old);
+        }
+    }).catch(function() {
+        searchPetey(string, old);
+    })
+}
+
 function searchPetey(string, old) {
     cls();
-    if (!old) {
-        var old = [];
-    }
     console.log(chalk.greenBright("✓") + chalk.blueBright(" [formatted string]"));
-    console.log(chalk.greenBright("✓") + chalk.blueBright(" [searced archive.org]"));
+    console.log(chalk.greenBright("✓") + chalk.blueBright(" [searched archive.org]"));
     console.log(chalk.yellowBright("- searching peteyvid.com..."));
     makeTail(old.length, old);
     if (string.title) {
@@ -278,8 +296,8 @@ function searchPetey(string, old) {
 function searchDailymotion(string, old) {
     cls();
     console.log(chalk.greenBright("✓") + chalk.blueBright(" [formatted string]"));
-    console.log(chalk.greenBright("✓") + chalk.blueBright(" [searced archive.org]"));
-    console.log(chalk.greenBright("✓") + chalk.blueBright(" [searced peteyvid.com]"));
+    console.log(chalk.greenBright("✓") + chalk.blueBright(" [searched archive.org]"));
+    console.log(chalk.greenBright("✓") + chalk.blueBright(" [searched peteyvid.com]"));
     console.log(chalk.yellowBright("- searching dailymotion..."));
     makeTail(old.length, old);
     if (string.title) {
@@ -337,18 +355,18 @@ function searchDailymotion(string, old) {
 function finish(string, data) {
     cls();
     console.log(chalk.greenBright("✓") + chalk.blueBright(" [formatted string]"));
-    console.log(chalk.greenBright("✓") + chalk.blueBright(" [searced archive.org]"));
-    console.log(chalk.greenBright("✓") + chalk.blueBright(" [searced peteyvid.com]"));
-    console.log(chalk.greenBright("✓") + chalk.blueBright(" [searced dailymotion]"));
+    console.log(chalk.greenBright("✓") + chalk.blueBright(" [searched archive.org]"));
+    console.log(chalk.greenBright("✓") + chalk.blueBright(" [searched peteyvid.com]"));
+    console.log(chalk.greenBright("✓") + chalk.blueBright(" [searched dailymotion]"));
     if (!fs.existsSync("./json/")) {fs.mkdirSync("./json/");}
     console.log(chalk.yellowBright("- writing to json..."));
     var fn = "./json/data-" + string.id + ".json";
     fs.writeFileSync(fn, JSON.stringify(data));
     cls();
     console.log(chalk.greenBright("✓") + chalk.blueBright(" [formatted string]"));
-    console.log(chalk.greenBright("✓") + chalk.blueBright(" [searced archive.org]"));
-    console.log(chalk.greenBright("✓") + chalk.blueBright(" [searced peteyvid.com]"));
-    console.log(chalk.greenBright("✓") + chalk.blueBright(" [searced dailymotion]"));
+    console.log(chalk.greenBright("✓") + chalk.blueBright(" [searched archive.org]"));
+    console.log(chalk.greenBright("✓") + chalk.blueBright(" [searched peteyvid.com]"));
+    console.log(chalk.greenBright("✓") + chalk.blueBright(" [searched dailymotion]"));
     console.log(chalk.greenBright("✓") + chalk.blueBright(" [wrote to " + fn + "]"));
     makeTail(data.length, data);
     if (data.length == 0 && string.title) {
