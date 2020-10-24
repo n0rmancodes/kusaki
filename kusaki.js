@@ -434,12 +434,16 @@ function srcs(data) {
 function randomTip(title) {
     if (title == "hasTitle") {
         var tips = [
-            "to find more videos, try titles in different languages."
+            "to find more videos, try titles in different languages.",
+            "if you don't know what to do from here, try using 'node reader'.",
+            "try updating kusaki often to get more results @ https://github.com/n0rmancodes/kusaki/releases/latest"
         ]
         return tips[Math.floor(Math.random()*tips.length)];
     } else {
         var tips = [
-            "to find more videos, try inputting a title, it doesn't have to be 100% accurate."
+            "to find more videos, try inputting a title, it doesn't have to be 100% accurate.",
+            "if you don't know what to do from here, try using 'node reader'.",
+            "try updating kusaki often to get more results @ https://github.com/n0rmancodes/kusaki/releases/latest"
         ]
         return tips[Math.floor(Math.random()*tips.length)];
     }
