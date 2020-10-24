@@ -340,6 +340,7 @@ function finish(string, data) {
     console.log(chalk.greenBright("✓") + chalk.blueBright(" [searced archive.org]"));
     console.log(chalk.greenBright("✓") + chalk.blueBright(" [searced peteyvid.com]"));
     console.log(chalk.greenBright("✓") + chalk.blueBright(" [searced dailymotion]"));
+    if (!fs.existsSync("./json/")) {fs.mkdirSync("./json/");}
     console.log(chalk.yellowBright("- writing to json..."));
     var fn = "./json/data-" + string.id + ".json";
     fs.writeFileSync(fn, JSON.stringify(data));
